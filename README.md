@@ -1,3 +1,5 @@
+Here is the updated `README.md` file:
+
 ```markdown
 # E-Commerce Platform
 
@@ -128,4 +130,15 @@ When using these test cards, you can use any future expiration date, any three-d
 - Backend: Deployed on Render
 - Frontend: Deployed on Netlify
 
+## Sample Login Credentials
+
+- **Admin**
+  - Email: ecommerce-app-admin@guerrillamail.org
+  - Password: qwertyui
+
+- **User**
+  - Email: ecommerce-app-user@guerrillamail.org
+  - Password: qwertyui
+
+These are sample login credentials that can be used to login.
 ```

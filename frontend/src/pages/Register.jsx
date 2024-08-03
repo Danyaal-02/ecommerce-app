@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { register } from '../services/api';
 import { ClipLoader } from 'react-spinners';
 
@@ -11,6 +11,7 @@ const Register = ({ onRegister }) => {
   const [role, setRole] = useState('user');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,13 +21,18 @@ const Register = ({ onRegister }) => {
     try {
       await register(name, email, password, role);
       onRegister();
-      navigate('/login');
+      setShowModal(true);
     } catch (error) {
       console.error('Registration error:', error);
       setError('Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate('/login');
   };
 
   return (
@@ -94,6 +100,35 @@ const Register = ({ onRegister }) => {
           {loading ? <ClipLoader color="#ffffff" size={20} /> : 'Register'}
         </motion.button>
       </form>
+
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4"
+            >
+              <h3 className="text-xl font-bold mb-4 text-indigo-400">Email Verification Required</h3>
+              <p className="text-gray-300 mb-4">
+                Please check your email and click the verification link to complete your registration.
+              </p>
+              <button
+                onClick={handleCloseModal}
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors w-full"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

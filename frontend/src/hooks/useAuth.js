@@ -27,6 +27,10 @@ export function useAuth() {
     }
   };
 
+  const register = () => {
+    checkLoginStatus();
+  };
+
   const login = (role, name) => {
     setIsLoggedIn(true);
     setUserRole(role);
@@ -44,5 +48,5 @@ export function useAuth() {
     navigate('/login');
   };
 
-  return { isLoggedIn, userRole, userName, login, logout };
+  return { isLoggedIn, userRole, userName, register, login, logout };
 }

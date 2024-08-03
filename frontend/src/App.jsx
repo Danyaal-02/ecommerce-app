@@ -1,6 +1,6 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -13,21 +13,10 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { isLoggedIn, userRole, userName, logout } = useAuth();
-  const [authState, setAuthState] = useState({ isLoggedIn, userRole, userName });
-
-  useEffect(() => {
-    setAuthState({ isLoggedIn, userRole, userName });
-  }, [isLoggedIn, userRole, userName]);
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <Header 
-        key={authState.isLoggedIn ? 'logged-in' : 'logged-out'}
-        isLoggedIn={authState.isLoggedIn} 
-        userRole={authState.userRole} 
-        userName={authState.userName} 
-        onLogout={logout} 
-      />
+      <Header isLoggedIn={isLoggedIn} userRole={userRole} userName={userName} onLogout={logout} />
       <main className="container mx-auto py-8 px-4">
         <Routes>
           <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />

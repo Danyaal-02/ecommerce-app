@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { register } from '../services/api';
 import { ClipLoader } from 'react-spinners';
+import { useAuth } from '../hooks/useAuth';
 
-const Register = ({ onRegister }) => {
+const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +14,7 @@ const Register = ({ onRegister }) => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const { register: onRegister } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

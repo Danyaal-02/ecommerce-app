@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { login } from '../services/api';
 import { ClipLoader } from 'react-spinners';
+import { useAuth } from '../hooks/useAuth';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login: onLogin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

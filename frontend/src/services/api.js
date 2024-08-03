@@ -9,12 +9,29 @@ const api = axios.create({
 
 // Request interceptor for API calls
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const token = JSON.parse(localStorage.getItem('token'));
+  if (token && new Date().getTime() < token.expiresAt) {
+    config.headers.Authorization = `Bearer ${token.token}`;
+  } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userName');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Authentication
 export const register = (name, email, password, role) => 
@@ -26,7 +43,8 @@ export const login = async (email, password) => {
     const { token, userRole, userName } = response.data; 
     
     if (token && userRole && userName) {
-      localStorage.setItem('token', token);
+      const expiresAt = new Date().getTime() + 30 * 60 * 1000; // 30 minutes from now
+      localStorage.setItem('token', JSON.stringify({ token, expiresAt }));
       localStorage.setItem('userRole', userRole);
       localStorage.setItem('userName', userName);
     }

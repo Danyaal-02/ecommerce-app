@@ -4,12 +4,15 @@ import ProductList from '../components/ProductList';
 import Cart from '../components/Cart';
 import { getProducts, addToCart, getCart, updateCartItemQuantity, removeCartItem } from '../services/api';
 import { FaShoppingCart } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners';
 
 const Home = ({ isLoggedIn }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCartLoading, setIsCartLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
@@ -17,24 +20,31 @@ const Home = ({ isLoggedIn }) => {
       fetchCart();
     } else {
       setCartItems([]);
+      setIsCartLoading(false);
     }
   }, [isLoggedIn]);
 
   const fetchProducts = async () => {
+    setIsLoading(true);
     try {
       const data = await getProducts();
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchCart = async () => {
+    setIsCartLoading(true);
     try {
       const data = await getCart();
       setCartItems(data.data.items || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
+    } finally {
+      setIsCartLoading(false);
     }
   };
 
@@ -74,6 +84,7 @@ const Home = ({ isLoggedIn }) => {
   };
 
   const handleCheckout = () => {
+    // Implement checkout logic
   };
 
   const toggleMobileCart = () => {
@@ -94,7 +105,13 @@ const Home = ({ isLoggedIn }) => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <ProductList products={products} onAddToCart={handleAddToCart} />
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <ClipLoader color="#6366F1" size={50} />
+            </div>
+          ) : (
+            <ProductList products={products} onAddToCart={handleAddToCart} />
+          )}
         </motion.div>
 
         {/* Desktop Cart */}
@@ -105,12 +122,18 @@ const Home = ({ isLoggedIn }) => {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           {isLoggedIn ? (
-            <Cart 
-              cartItems={cartItems} 
-              onCheckout={handleCheckout} 
-              onUpdateQuantity={handleUpdateQuantity}
-              onRemoveItem={handleRemoveItem}
-            />
+            isCartLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <ClipLoader color="#6366F1" size={50} />
+              </div>
+            ) : (
+              <Cart 
+                cartItems={cartItems} 
+                onCheckout={handleCheckout} 
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={handleRemoveItem}
+              />
+            )
           ) : (
             <p className="text-center text-gray-400 italic bg-gray-800 rounded-lg shadow-lg p-6">Please log in to view your cart.</p>
           )}
@@ -156,7 +179,7 @@ const Home = ({ isLoggedIn }) => {
           )}
         </AnimatePresence>
 
-        {/* Classy Notification Popup */}
+        {/* Notification Popup */}
         <AnimatePresence>
           {notification.show && (
             <motion.div

@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaShoppingCart } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners';
 
 const ProductItem = ({ product, onAddToCart }) => {
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
   if (!product) return null;
 
   const formattedPrice = typeof product.price === 'number'
     ? `$${product.price.toFixed(2)}`
     : 'Price not available';
+
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true);
+    await onAddToCart(product._id);
+    setIsAddingToCart(false);
+  };
 
   return (
     <motion.div 
@@ -35,14 +44,20 @@ const ProductItem = ({ product, onAddToCart }) => {
             {formattedPrice}
           </p>
           <button
-            onClick={() => onAddToCart(product._id)}
+            onClick={handleAddToCart}
             className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-md 
                        hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50
                        flex items-center justify-center"
-            disabled={!product._id}
+            disabled={!product._id || isAddingToCart}
           >
-            <FaShoppingCart className="mr-2" /> Add to Cart
+            {isAddingToCart ? (
+              <ClipLoader color="#ffffff" size={20} />
+            ) : (
+              <>
+                <FaShoppingCart className="mr-2" /> Add to Cart
+              </>
+            )}
           </button>
         </div>
       </div>

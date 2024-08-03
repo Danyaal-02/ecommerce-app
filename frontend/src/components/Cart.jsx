@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners';
 
 const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const items = cartItems && Array.isArray(cartItems) ? cartItems : [];
+  const [loadingStates, setLoadingStates] = useState({});
 
   const total = items.reduce((sum, item) => {
     if (item && item.productId && typeof item.productId.price === 'number' && typeof item.quantity === 'number') {
@@ -17,6 +19,18 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem }) => {
 
   const handleCheckout = () => {
     navigate('/checkout', { state: { cartItems: items } });
+  };
+
+  const handleUpdateQuantity = async (productId, newQuantity, action) => {
+    setLoadingStates(prev => ({ ...prev, [productId]: { ...prev[productId], [action]: true } }));
+    await onUpdateQuantity(productId, newQuantity);
+    setLoadingStates(prev => ({ ...prev, [productId]: { ...prev[productId], [action]: false } }));
+  };
+
+  const handleRemoveItem = async (productId) => {
+    setLoadingStates(prev => ({ ...prev, [productId]: { ...prev[productId], remove: true } }));
+    await onRemoveItem(productId);
+    setLoadingStates(prev => ({ ...prev, [productId]: { ...prev[productId], remove: false } }));
   };
 
   return (
@@ -36,26 +50,28 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem }) => {
               <span className="text-lg mb-2 sm:mb-0">{item.productId.name}</span>
               <div className="flex items-center">
                 <button 
-                  onClick={() => onUpdateQuantity(item.productId._id, item.quantity - 1)}
+                  onClick={() => handleUpdateQuantity(item.productId._id, item.quantity - 1, 'decrement')}
                   className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors duration-200"
-                  disabled={item.quantity <= 1}
+                  disabled={item.quantity <= 1 || loadingStates[item.productId._id]?.decrement}
                 >
-                  -
+                  {loadingStates[item.productId._id]?.decrement ? <ClipLoader color="#ffffff" size={12} /> : '-'}
                 </button>
                 <span className="mx-3">{item.quantity}</span>
                 <button 
-                  onClick={() => onUpdateQuantity(item.productId._id, item.quantity + 1)}
+                  onClick={() => handleUpdateQuantity(item.productId._id, item.quantity + 1, 'increment')}
                   className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 transition-colors duration-200"
+                  disabled={loadingStates[item.productId._id]?.increment}
                 >
-                  +
+                  {loadingStates[item.productId._id]?.increment ? <ClipLoader color="#ffffff" size={12} /> : '+'}
                 </button>
                 <div>
                     <span className="ml-4 text-indigo-300">${(item.productId.price * item.quantity).toFixed(2)}</span>
                     <button
-                      onClick={() => onRemoveItem(item.productId._id)}
+                      onClick={() => handleRemoveItem(item.productId._id)}
                       className="ml-4 text-red-400 hover:text-red-300 transition-colors duration-200"
+                      disabled={loadingStates[item.productId._id]?.remove}
                     >
-                      <FaTrash />
+                      {loadingStates[item.productId._id]?.remove ? <ClipLoader color="#F87171" size={12} /> : <FaTrash />}
                     </button>
                 </div>
               </div>
@@ -68,13 +84,13 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem }) => {
             </div>
           </div>
           <button
-                onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md 
-                           hover:from-indigo-600 hover:to-purple-700 transition duration-300 flex items-center justify-center
-                           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-              >
-                <FaShoppingCart className="mr-2" /> Proceed to Checkout
-              </button>
+            onClick={handleCheckout}
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-md 
+                       hover:from-indigo-600 hover:to-purple-700 transition duration-300 flex items-center justify-center
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 mt-4"
+          >
+            <FaShoppingCart className="mr-2" /> Proceed to Checkout
+          </button>
         </>
       )}
     </motion.div>

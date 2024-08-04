@@ -1,5 +1,3 @@
-Here is the updated `README.md` file:
-
 ```markdown
 # E-Commerce Platform
 

@@ -3,6 +3,11 @@
 
 A comprehensive e-commerce platform built with Node.js, Express, MongoDB, and Supabase for the backend, and a frontend built with React.
 
+## Deployed Application
+
+- Frontend: [https://ecommerce-app-02.netlify.app/](https://ecommerce-app-02.netlify.app/)
+- Backend: [https://ecommerce-app-mvn0.onrender.com](https://ecommerce-app-mvn0.onrender.com)
+
 ## Backend Setup
 
 1. Clone the repository
@@ -45,7 +50,7 @@ The frontend should now be running on `http://localhost:5173`
 
 - **POST /api/auth/register**
   - Register a new user
-  - Body: `{ "email": "user@example.com", "password": "password123", "role": "user" }`
+  - Body: `{ "name": "John Doe", "email": "user@example.com", "password": "password123", "role": "user" }`
 
 - **POST /api/auth/login**
   - Log in a user

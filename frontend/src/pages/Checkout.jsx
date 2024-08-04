@@ -58,8 +58,15 @@ const Checkout = () => {
         >
           <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-indigo-300">Order Summary</h3>
           {cartItems.map((item) => (
-            <div key={item.productId._id} className="flex justify-between mb-2 text-sm sm:text-base text-gray-300">
-              <span>{item.productId.name} x {item.quantity}</span>
+            <div key={item.productId._id} className="flex items-center justify-between mb-4 text-sm sm:text-base text-gray-300">
+              <div className="flex items-center">
+                <img 
+                  src={item.productId.imageUrl || 'https://via.placeholder.com/50'} 
+                  alt={item.productId.name} 
+                  className="w-12 h-12 object-cover rounded-md mr-4"
+                />
+                <span>{item.productId.name} x {item.quantity}</span>
+              </div>
               <span className="text-indigo-300">${(item.productId.price * item.quantity).toFixed(2)}</span>
             </div>
           ))}
@@ -80,6 +87,7 @@ const Checkout = () => {
           <Elements stripe={stripePromise}>
             <CheckoutForm 
               cartItems={cartItems} 
+              total={total}
               onSuccess={handleSuccess}
               onIncompletePayment={handleIncompletePayment}
             />

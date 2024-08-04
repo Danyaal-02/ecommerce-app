@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import ProductItem from './ProductItem';
 
-const ProductList = ({ products, onAddToCart }) => {
+const ProductList = ({ products, onAddToCart, isLoggedIn }) => {
   if (!Array.isArray(products) || products.length === 0) {
     return <p className="text-center text-gray-400 my-8">No products available.</p>;
   }
@@ -19,7 +19,7 @@ const ProductList = ({ products, onAddToCart }) => {
       </h2>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          product && <ProductItem key={product._id} product={product} onAddToCart={onAddToCart} />
+          product && <ProductItem key={product._id} product={product} onAddToCart={onAddToCart} isLoggedIn={isLoggedIn} />
         ))}
       </div>
     </motion.div>

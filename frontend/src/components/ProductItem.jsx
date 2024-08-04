@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaShoppingCart } from 'react-icons/fa';
 import { ClipLoader } from 'react-spinners';
 
-const ProductItem = ({ product, onAddToCart }) => {
+const ProductItem = ({ product, onAddToCart, isLoggedIn }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   if (!product) return null;
 
@@ -13,6 +14,11 @@ const ProductItem = ({ product, onAddToCart }) => {
     : 'Price not available';
 
   const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+      return;
+    }
     setIsAddingToCart(true);
     await onAddToCart(product._id);
     setIsAddingToCart(false);
@@ -20,7 +26,7 @@ const ProductItem = ({ product, onAddToCart }) => {
 
   return (
     <motion.div 
-      className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/50 flex flex-col"
+      className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/50 flex flex-col relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -61,6 +67,20 @@ const ProductItem = ({ product, onAddToCart }) => {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.3 }}
+            className="absolute bottom-0 left-0 right-0 bg-red-500 text-white p-2 text-center"
+          >
+            Please log in to add items to your cart.
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

@@ -50,7 +50,8 @@ const Home = ({ isLoggedIn }) => {
 
   const handleAddToCart = async (productId) => {
     if (!isLoggedIn) {
-      alert('Please log in to add items to your cart.');
+      setNotification({ show: true, message: 'Please log in to add items to your cart.', type: 'error' });
+      setTimeout(() => setNotification({ show: false, message: '', type: 'error' }), 3000);
       return;
     }
     try {
@@ -110,7 +111,7 @@ const Home = ({ isLoggedIn }) => {
               <ClipLoader color="#6366F1" size={50} />
             </div>
           ) : (
-            <ProductList products={products} onAddToCart={handleAddToCart} />
+            <ProductList products={products} onAddToCart={handleAddToCart} isLoggedIn={isLoggedIn} />
           )}
         </motion.div>
 

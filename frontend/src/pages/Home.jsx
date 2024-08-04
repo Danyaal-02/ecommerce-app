@@ -31,6 +31,7 @@ const Home = ({ isLoggedIn }) => {
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
+      showNotification('Failed to fetch products', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -43,26 +44,29 @@ const Home = ({ isLoggedIn }) => {
       setCartItems(data.data.items || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
+      showNotification('Failed to fetch cart', 'error');
     } finally {
       setIsCartLoading(false);
     }
   };
 
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
+  };
+
   const handleAddToCart = async (productId) => {
     if (!isLoggedIn) {
-      setNotification({ show: true, message: 'Please log in to add items to your cart.', type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: 'error' }), 3000);
+      showNotification('Please log in to add items to your cart.', 'error');
       return;
     }
     try {
       await addToCart(productId, 1);
       fetchCart();
-      setNotification({ show: true, message: 'Product added to cart', type: 'success' });
-      setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
+      showNotification('Product added to cart', 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      setNotification({ show: true, message: 'Failed to add product to cart', type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: 'error' }), 3000);
+      showNotification('Failed to add product to cart', 'error');
     }
   };
 
@@ -70,8 +74,10 @@ const Home = ({ isLoggedIn }) => {
     try {
       await updateCartItemQuantity(productId, newQuantity);
       fetchCart();
+      showNotification('Cart updated successfully', 'success');
     } catch (error) {
       console.error('Error updating cart item quantity:', error);
+      showNotification('Failed to update cart', 'error');
     }
   };
   
@@ -79,13 +85,16 @@ const Home = ({ isLoggedIn }) => {
     try {
       await removeCartItem(productId);
       fetchCart();
+      showNotification('Item removed from cart', 'success');
     } catch (error) {
       console.error('Error removing item from cart:', error);
+      showNotification('Failed to remove item from cart', 'error');
     }
   };
 
   const handleCheckout = () => {
     // Implement checkout logic
+    showNotification('Checkout functionality not implemented yet', 'error');
   };
 
   const toggleMobileCart = () => {
